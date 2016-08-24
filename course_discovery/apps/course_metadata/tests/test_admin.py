@@ -1,10 +1,11 @@
 import ddt
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from haystack.exceptions import SearchFieldError
 
 from course_discovery.apps.course_metadata.tests import factories
 from course_discovery.apps.core.tests.factories import UserFactory, USER_PASSWORD
-
+from course_discovery.apps.core.tests.helpers import make_image_file
 
 # pylint: disable=no-member
 @ddt.ddt
@@ -101,3 +102,35 @@ class AdminTests(TestCase):
         self.assertEqual(4, len(self.program.course_runs.all()))
         response = self.client.get(reverse('admin_metadata:update_course_runs', args=(self.program.id,)))
         self.assertNotContains(response, '<input checked="checked")')
+
+    def test_add_new_program_without_type(self):
+        """ Verify that new program cannot be added without `type` using admin form. """
+        post_url = reverse('admin:course_metadata_program_add')
+        with self.assertRaises(SearchFieldError):
+            self.client.post(post_url, self._post_data())
+
+    def test_add_new_program_with_type(self):
+        """ Verify that new program can be added with `type` using admin form. """
+        data = self._post_data()
+        data['type'] = self.program.type.id
+        post_url = reverse('admin:course_metadata_program_add')
+        response = self.client.post(post_url, data)
+        new_program_id = 2
+
+        self.assertRedirects(
+            response,
+            expected_url=reverse('admin:course_metadata_program_change', args=(new_program_id,)),
+            status_code=302,
+            target_status_code=200
+        )
+
+        response = self.client.get(reverse('admin:course_metadata_program_change', args=(new_program_id,)))
+        self.assertEqual(response.status_code, 200)
+
+    def _post_data(self):
+        return {
+            'title': 'some test title',
+            'status': 'unpublished',
+            'courses': [self.courses[0].id],
+            'banner_image': make_image_file('test_banner.jpg')
+        }
