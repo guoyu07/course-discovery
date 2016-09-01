@@ -14,18 +14,18 @@ class ProgramAdminForm(forms.ModelForm):
             'category',
         )
         widgets = {
-            'courses': autocomplete.ModelSelect2Multiple(
-                url='admin_metadata:course-autocomplete',
-                attrs={
-                    'data-minimum-input-length': 3,
-                },
-            ),
-            'authoring_organizations': autocomplete.ModelSelect2Multiple(
-                url='admin_metadata:organisation-autocomplete',
-                attrs={
-                    'data-minimum-input-length': 3,
-                }
-            ),
+            # 'courses': autocomplete.ModelSelect2Multiple(
+            #     url='admin_metadata:course-autocomplete',
+            #     attrs={
+            #         'data-minimum-input-length': 3,
+            #     },
+            # ),
+            # 'authoring_organizations': autocomplete.ModelSelect2Multiple(
+            #     url='admin_metadata:organisation-autocomplete',
+            #     attrs={
+            #         'data-minimum-input-length': 3,
+            #     }
+            # ),
             'credit_backing_organizations': autocomplete.ModelSelect2Multiple(
                 url='admin_metadata:organisation-autocomplete',
                 attrs={
