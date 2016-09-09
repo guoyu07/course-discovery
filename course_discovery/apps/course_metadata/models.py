@@ -381,7 +381,7 @@ class CourseRun(TimeStampedModel):
 
     @property
     def program_types(self):
-        return [program.type.name for program in self.programs.all()]
+        return list(set([program.type.name for program in self.programs.all()]))
 
     @property
     def marketing_url(self):
@@ -599,6 +599,8 @@ class Program(TimeStampedModel):
         help_text=_('The user-facing display title for this Program.'), max_length=255, unique=True)
     subtitle = models.CharField(
         help_text=_('A brief, descriptive subtitle for the Program.'), max_length=255, blank=True)
+    # TODO Remove category in favor of type
+    category = models.CharField(help_text=_('The category / type of Program.'), max_length=32)
     type = models.ForeignKey(ProgramType, null=True, blank=True)
     status = models.CharField(
         help_text=_('The lifecycle status of this Program.'), max_length=24, null=False, blank=False, db_index=True,

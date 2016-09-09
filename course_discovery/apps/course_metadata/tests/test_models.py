@@ -17,7 +17,7 @@ from course_discovery.apps.core.utils import SearchQuerySetWrapper
 from course_discovery.apps.course_metadata.models import (
     AbstractMediaModel, AbstractNamedModel, AbstractValueModel,
     CorporateEndorsement, Program, Course, CourseRun, Endorsement,
-    FAQ, SeatType, ProgramType,
+    FAQ, SeatType
 )
 from course_discovery.apps.course_metadata.tests import factories, toggle_switch
 from course_discovery.apps.course_metadata.tests.factories import CourseRunFactory, ImageFactory
@@ -162,6 +162,14 @@ class CourseRunTests(TestCase):
         program = factories.ProgramFactory(courses=courses)
         other_program = factories.ProgramFactory(courses=courses)
         self.assertCountEqual(self.course_run.program_types, [program.type.name, other_program.type.name])
+
+    def test_program_types_unique(self):
+        """ Verify the property doesn't show duplicate program types. """
+        courses = [self.course_run.course]
+        program = factories.ProgramFactory(courses=courses)
+        program2 = factories.ProgramFactory(courses=courses)
+        program3 = factories.ProgramFactory(courses=courses, type=program2.type)
+        self.assertCountEqual(self.course_run.program_types, [program.type.name, program2.type.name])
 
 
 class OrganizationTests(TestCase):
@@ -407,7 +415,7 @@ class ProgramTests(MarketingSitePublisherTestMixin):
         self.program.partner.marketing_site_url_root = self.api_root
         self.program.partner.marketing_site_api_username = self.username
         self.program.partner.marketing_site_api_password = self.password
-        self.program.type = ProgramType.objects.get(name='MicroMasters')
+        self.program.save()
         self.mock_api_client(200)
         self.mock_node_retrieval(self.program.uuid)
         self.mock_node_edit(200)
@@ -417,22 +425,9 @@ class ProgramTests(MarketingSitePublisherTestMixin):
         self.assert_responses_call_count(6)
 
     @responses.activate
-    def test_xseries_program_save(self):
-        """
-        Make sure if the Program instance is of type XSeries, we do not publish to Marketing Site
-        """
-        self.program.partner.marketing_site_url_root = self.api_root
-        self.program.partner.marketing_site_api_username = self.username
-        self.program.partner.marketing_site_api_password = self.password
-        self.program.type = ProgramType.objects.get(name='XSeries')
-        toggle_switch('publish_program_to_marketing_site', True)
-        self.program.title = FuzzyText().fuzz()
-        self.program.save()
-        self.assert_responses_call_count(0)
-
-    @responses.activate
     def test_save_and_no_marketing_site(self):
         self.program.partner.marketing_site_url_root = None
+        self.program.save()
         toggle_switch('publish_program_to_marketing_site', True)
         self.program.title = FuzzyText().fuzz()
         self.program.save()
@@ -443,7 +438,7 @@ class ProgramTests(MarketingSitePublisherTestMixin):
         self.program.partner.marketing_site_url_root = self.api_root
         self.program.partner.marketing_site_api_username = self.username
         self.program.partner.marketing_site_api_password = self.password
-        self.program.type = ProgramType.objects.get(name='MicroMasters')
+        self.program.save()
         self.mock_api_client(200)
         self.mock_node_retrieval(self.program.uuid)
         self.mock_node_delete(204)
@@ -454,6 +449,7 @@ class ProgramTests(MarketingSitePublisherTestMixin):
     @responses.activate
     def test_delete_and_no_marketing_site(self):
         self.program.partner.marketing_site_url_root = None
+        self.program.save()
         toggle_switch('publish_program_to_marketing_site', True)
         self.program.delete()
         self.assert_responses_call_count(0)
