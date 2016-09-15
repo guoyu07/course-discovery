@@ -28,16 +28,21 @@ class SimpleQuerySearchBackendMixin(object):
           }
         """
         query_string = args[0]
+        elasticsearch_config = ElasticsearchBoostConfig.get_solo()
         search_kwargs = super(SimpleQuerySearchBackendMixin, self).build_search_kwargs(*args, **kwargs)
 
         simple_query = {
             'query': query_string,
+            # 'fields':[
+            #     '_all',
+            #     'title^100'
+            # ],
             'analyze_wildcard': True,
             'auto_generate_phrase_queries': True,
         }
 
         # https://www.elastic.co/guide/en/elasticsearch/reference/1.7/query-dsl-function-score-query.html
-        function_score_config = ElasticsearchBoostConfig.get_solo().function_score
+        function_score_config = elasticsearch_config.function_score
 
         function_score_config['query'] = {
             'query_string': simple_query
@@ -52,6 +57,7 @@ class SimpleQuerySearchBackendMixin(object):
         elif search_kwargs['query'].get('query_string'):
             search_kwargs['query'] = function_score
 
+        print(search_kwargs)
         return search_kwargs
 
 

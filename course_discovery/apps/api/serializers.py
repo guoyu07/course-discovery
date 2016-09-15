@@ -45,10 +45,7 @@ COURSE_RUN_FACET_FIELD_QUERIES = {
     'availability_archived': {'query': 'end:<=now'},
 }
 COURSE_RUN_SEARCH_FIELDS = (
-    'text', 'key', 'title', 'short_description', 'full_description', 'start', 'end', 'enrollment_start',
-    'enrollment_end', 'pacing_type', 'language', 'transcript_languages', 'marketing_url', 'content_type', 'org',
-    'number', 'seat_types', 'image_url', 'type', 'level_type', 'availability', 'published', 'partner', 'program_types',
-    'authoring_organization_uuids', 'subject_uuids', 'staff_uuids',
+    'text', 'key', 'title', 'start', 'end', 'pacing_type', 'availability', 'published', 'partner', 'program_types', 'score',
 )
 
 PROGRAM_FACET_FIELD_OPTIONS = {
@@ -59,7 +56,7 @@ PROGRAM_FACET_FIELD_OPTIONS = {
 
 BASE_PROGRAM_FIELDS = (
     'text', 'uuid', 'title', 'subtitle', 'type', 'marketing_url', 'content_type', 'status', 'card_image_url',
-    'published', 'partner',
+    'published', 'partner', 'score',
 )
 
 PROGRAM_SEARCH_FIELDS = BASE_PROGRAM_FIELDS + ('authoring_organizations', 'authoring_organization_uuids',
@@ -667,9 +664,13 @@ class CourseFacetSerializer(BaseHaystackFacetSerializer):
 
 class CourseRunSearchSerializer(HaystackSerializer):
     availability = serializers.SerializerMethodField()
+    score = serializers.SerializerMethodField()
 
     def get_availability(self, result):
         return result.object.availability
+
+    def get_score(self, result):
+        return result.score
 
     class Meta:
         field_aliases = COMMON_SEARCH_FIELD_ALIASES
@@ -690,10 +691,14 @@ class CourseRunFacetSerializer(BaseHaystackFacetSerializer):
 
 class ProgramSearchSerializer(HaystackSerializer):
     authoring_organizations = serializers.SerializerMethodField()
+    score = serializers.SerializerMethodField()
 
     def get_authoring_organizations(self, program):
         organizations = program.authoring_organization_bodies
         return [json.loads(organization) for organization in organizations] if organizations else []
+
+    def get_score(self, result):
+        return result.score
 
     class Meta:
         field_aliases = COMMON_SEARCH_FIELD_ALIASES
