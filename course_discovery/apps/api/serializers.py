@@ -45,7 +45,7 @@ COURSE_RUN_FACET_FIELD_QUERIES = {
     'availability_archived': {'query': 'end:<=now'},
 }
 COURSE_RUN_SEARCH_FIELDS = (
-    'text', 'key', 'title', 'start', 'end', 'pacing_type', 'availability', 'published', 'partner', 'program_types', 'score',
+    'text', 'key', 'title', 'start', 'end', 'pacing_type', 'availability', 'published', 'partner', 'program_types', 'content_type', 'score',
 )
 
 PROGRAM_FACET_FIELD_OPTIONS = {

@@ -33,12 +33,12 @@ class SimpleQuerySearchBackendMixin(object):
 
         simple_query = {
             'query': query_string,
-            # 'fields':[
-            #     '_all',
-            #     'title^100'
-            # ],
+             'fields':[
+                 '_all',
+                 'title^100'
+             ],
             'analyze_wildcard': True,
-            'auto_generate_phrase_queries': True,
+            'auto_generate_phrase_queries': True
         }
 
         # https://www.elastic.co/guide/en/elasticsearch/reference/1.7/query-dsl-function-score-query.html

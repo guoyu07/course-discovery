@@ -3,10 +3,11 @@ from datetime import datetime, timedelta
 from django.core.management import BaseCommand
 
 from course_discovery.apps.core.models import Partner
+from course_discovery.apps.course_metadata.choices import CourseRunStatus, CourseRunPacing, ProgramStatus
 from course_discovery.apps.course_metadata.models import Course, CourseRun, Program, ProgramType
 
-MICROMASTER_TYPE = ProgramType.objects.get(name='micromasters')
-XSERIES_TYPE = ProgramType.objects.get(name='xseries')
+MICROMASTER_TYPE = ProgramType.objects.get(name='MicroMasters')
+XSERIES_TYPE = ProgramType.objects.get(name='XSeries')
 PARTNER = Partner.objects.all().first()
 
 TIMES = [
@@ -46,28 +47,28 @@ class Command(BaseCommand):
             key='test/{}{}'.format(title[:8], 'sp' if self_paced else ''),
             full_description="dogs cats foxes living together!"
         )
+
         CourseRun.objects.create(
             course=course,
             key='test/{}{}/run'.format(title[:8], 'sp' if self_paced else ''),
-            status=CourseRun.Status.Published,
+            status=CourseRunStatus.Published,
             start=start,
-            pacing_type=CourseRun.Pacing.Self if self_paced else CourseRun.Pacing.Instructor
+            pacing_type=CourseRunPacing.Self if self_paced else CourseRunPacing.Instructor
         )
         return course
 
     def load_micromaster(self, title, course):
         program = Program.objects.create(
-            status=Program.Status.Active,
+            status=ProgramStatus.Active,
             title='MicroMasters {}'.format(title),
             partner=PARTNER,
             type=MICROMASTER_TYPE
         )
-
         program.courses.add(course)
 
     def load_xseries(self, title, course):
         program = Program.objects.create(
-            status=Program.Status.Active,
+            status=ProgramStatus.Active,
             title='XSeries {}'.format(title),
             partner=PARTNER,
             type=XSERIES_TYPE
