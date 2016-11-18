@@ -27,6 +27,7 @@ from course_discovery.apps.api import filters
 from course_discovery.apps.api import serializers
 from course_discovery.apps.api.exceptions import InvalidPartnerError
 from course_discovery.apps.api.pagination import PageNumberPagination
+from course_discovery.apps.api.permissions import JwtScopePermissions
 from course_discovery.apps.api.renderers import AffiliateWindowXMLRenderer, CourseRunCSVRenderer
 from course_discovery.apps.api.utils import cast2int
 from course_discovery.apps.catalogs.models import Catalog
@@ -80,7 +81,7 @@ class CatalogViewSet(viewsets.ModelViewSet):
 
     filter_backends = (filters.PermissionsFilter,)
     lookup_field = 'id'
-    permission_classes = (DRYPermissions,)
+    permission_classes = (DRYPermissions, JwtScopePermissions,)
     queryset = Catalog.objects.all()
     serializer_class = serializers.CatalogSerializer
 
