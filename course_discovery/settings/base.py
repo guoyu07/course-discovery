@@ -310,8 +310,8 @@ LOGGING = {
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
+        'edx_rest_framework_extensions.authentication.JwtAuthentication',
         'edx_rest_framework_extensions.authentication.BearerAuthentication',
-        'course_discovery.apps.api.authentication.JwtAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',

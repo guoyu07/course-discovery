@@ -13,7 +13,7 @@ from django.shortcuts import get_object_or_404
 from drf_haystack.mixins import FacetMixin
 from drf_haystack.viewsets import HaystackViewSet
 from dry_rest_permissions.generics import DRYPermissions
-from edx_rest_framework_extensions.permissions import IsSuperuser
+from edx_rest_framework_extensions.permissions import IsSuperuser, JwtScopePermissions
 from haystack.inputs import AutoQuery
 from haystack.query import SQ
 from rest_framework import status, viewsets
@@ -27,7 +27,6 @@ from course_discovery.apps.api import filters
 from course_discovery.apps.api import serializers
 from course_discovery.apps.api.exceptions import InvalidPartnerError
 from course_discovery.apps.api.pagination import PageNumberPagination
-from course_discovery.apps.api.permissions import JwtScopePermissions
 from course_discovery.apps.api.renderers import AffiliateWindowXMLRenderer, CourseRunCSVRenderer
 from course_discovery.apps.api.utils import cast2int
 from course_discovery.apps.catalogs.models import Catalog
